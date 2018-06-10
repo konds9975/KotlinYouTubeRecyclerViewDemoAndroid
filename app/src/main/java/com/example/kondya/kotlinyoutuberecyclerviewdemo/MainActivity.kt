@@ -4,6 +4,8 @@ import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import java.io.IOException
@@ -17,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 //        recyclerview_main.setBackgroundColor(Color.BLUE)
 
         recyclerview_main.layoutManager = LinearLayoutManager(this)
-        recyclerview_main.adapter = MainAdapter()
+        //recyclerview_main.adapter = MainAdapter()
 
         fetchJson()
 
@@ -35,6 +37,15 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call?, response: Response?) {
                 val body = response?.body()?.string()
                 println(body)
+
+                val gson = GsonBuilder().create()
+
+                val homeFeed = gson.fromJson(body,HomeFeed::class.java)
+
+                runOnUiThread {
+                    recyclerview_main.adapter = MainAdapter(homeFeed)
+                }
+
             }
 
             override fun onFailure(call: Call?, e: IOException?) {
